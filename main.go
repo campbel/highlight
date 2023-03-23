@@ -15,7 +15,7 @@ type Options struct {
 	File string `yoshi:"FILE;Input file, alternatively pass from stdin;"`
 	Language string `yoshi:"-l,--language;Language of the content;go"`
 	Theme string `yoshi:"-t,--theme;Theme for the output;nord"`
-	Format string `yoshi:"-f,--format;Format of the output;terminal16"`
+	Format string `yoshi:"-f,--format;Format of the output;terminal256"`
 }
 
 func main() {
