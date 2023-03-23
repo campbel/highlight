@@ -4,6 +4,12 @@ Highlight code for easy viewing.
 
 ![Demo of Highlight](tape/demo.gif)
 
+## Install
+
+```sh
+go install github.com/campbel/highlight@main
+```
+
 ## Examples
 
 ### Other languages
