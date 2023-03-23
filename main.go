@@ -1,21 +1,21 @@
 package main
 
 import (
-	"os"
-	"fmt"
-	"strings"
-	"io"
 	"bytes"
+	"fmt"
+	"io"
+	"os"
+	"strings"
 
-	"github.com/campbel/yoshi"
 	"github.com/alecthomas/chroma/quick"
+	"github.com/campbel/yoshi"
 )
 
 type Options struct {
-	File string `yoshi:"FILE;Input file, alternatively pass from stdin;"`
+	File     string `yoshi:"FILE;Input file, alternatively pass from stdin;"`
 	Language string `yoshi:"-l,--language;Language of the content;go"`
-	Theme string `yoshi:"-t,--theme;Theme for the output;nord"`
-	Format string `yoshi:"-f,--format;Format of the output;terminal256"`
+	Theme    string `yoshi:"-t,--theme;Theme for the output;nord"`
+	Format   string `yoshi:"-f,--format;Format of the output;terminal256"`
 }
 
 func main() {
@@ -47,7 +47,7 @@ func getContent(file string) string {
 }
 
 func highlight(content, language, format, theme string) string {
-	content = strings.TrimSpace(strings.Replace(content, "\t", "    ", -1))
+	content = strings.Replace(content, "\t", "    ", -1)
 	var b bytes.Buffer
 	err := quick.Highlight(&b, content, language, format, theme)
 	if err != nil {
