@@ -5,11 +5,18 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/exec"
 	"strings"
 
 	"github.com/alecthomas/chroma/lexers"
 	"github.com/alecthomas/chroma/quick"
 	"github.com/campbel/yoshi"
+	"golang.org/x/exp/slices"
+)
+
+var (
+	chromaFormats   = []string{"noop", "html", "svg", "json", "terminal16m", "terminal", "terminal8", "terminal16", "terminal256", "tokens"}
+	textUtilFormats = []string{"txt", "rtf", "rtfd", "html", "doc", "docx", "odt", "wordml", "webarchive"}
 )
 
 type Options struct {
@@ -29,7 +36,16 @@ func main() {
 		if options.Language == "" && options.File != "" {
 			options.Language = lexers.Match(options.File).Config().Name
 		}
-		fmt.Println(highlight(string(content), options.Language, options.Format, options.Theme))
+		switch {
+		case slices.Contains(chromaFormats, options.Format):
+			fmt.Println(highlight(string(content), options.Language, options.Format, options.Theme))
+			return
+		case slices.Contains(textUtilFormats, options.Format):
+			fmt.Println(textUtilAdapter(highlight(content, options.Language, "html", options.Theme), options.Format))
+			return
+		default:
+			fmt.Fprintln(os.Stderr, "invalid format, choose one of:", append(chromaFormats, textUtilFormats...))
+		}
 	})
 }
 
@@ -58,4 +74,14 @@ func highlight(content, language, format, theme string) string {
 		fmt.Fprintln(os.Stderr, "error highlighting: ", err)
 	}
 	return b.String()
+}
+
+func textUtilAdapter(content, format string) string {
+	cmd := exec.Command("textutil", "-stdin", "-format", "html", "-convert", format, "-stdout")
+	cmd.Stdin = strings.NewReader(content)
+	out, err := cmd.Output()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "error converting to rich text: ", err)
+	}
+	return string(out)
 }
