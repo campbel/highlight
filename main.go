@@ -33,15 +33,13 @@ func main() {
 			fmt.Fprintln(os.Stderr, "no content to highlight")
 			os.Exit(0)
 		}
-		if options.Language == "" && options.File != "" {
-			options.Language = lexers.Match(options.File).Config().Name
-		}
+		language := getLanguage(options.Language, options.File, content)
 		switch {
 		case slices.Contains(chromaFormats, options.Format):
-			fmt.Println(highlight(string(content), options.Language, options.Format, options.Theme))
+			fmt.Println(highlight(string(content), language, options.Format, options.Theme))
 			return
 		case slices.Contains(textUtilFormats, options.Format):
-			fmt.Println(textUtilAdapter(highlight(content, options.Language, "html", options.Theme), options.Format))
+			fmt.Println(textUtilAdapter(highlight(content, language, "html", options.Theme), options.Format))
 			return
 		default:
 			fmt.Fprintln(os.Stderr, "invalid format, choose one of:", append(chromaFormats, textUtilFormats...))
@@ -64,6 +62,22 @@ func getContent(file string) string {
 		os.Exit(1)
 	}
 	return string(content)
+}
+
+func getLanguage(language, file, content string) string {
+	lexer := lexers.Get(language)
+	if lexer != nil {
+		return lexer.Config().Name
+	}
+	lexer = lexers.Match(file)
+	if lexer != nil {
+		return lexer.Config().Name
+	}
+	lexer = lexers.Analyse(content)
+	if lexer != nil {
+		return lexer.Config().Name
+	}
+	return ""
 }
 
 func highlight(content, language, format, theme string) string {
