@@ -1,6 +1,6 @@
 # Highlight
 
-Highlight code for easy viewing.
+Highlight code for pleasent viewing.
 
 ![Demo of Highlight](tape/demo.gif)
 
@@ -24,7 +24,9 @@ highlight my_file.rb
 cat main.go | highlight
 ```
 
-### To Rich Text and Copy (Google Docs / Word)
+### Rich text
+
+Useful if the intention is to copy output into document software like Google docs or word.
 
 ```sh
 # Output rich text to copy into a doc
